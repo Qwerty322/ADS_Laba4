@@ -19,18 +19,21 @@ int cinInt(){
 
 
 
+
+
 int main() {
     srand(time(0));
-    ChainHash<TYPE, TYPE> CH(10);
+    HashTable<> hashTable;
+    hashTable.selectOpenMode(20);
     for (int i = 0; i < 5; ++i) {
-        CH.insert(rand() % 200000000 + 100000000, i);
+        hashTable.insert(rand() % 200000000 + 100000000, i);
     }
-    int x = rand() % 200000000 + 100000000;
-    CH.insert(x, 111);
-    CH.printHash();
+    hashTable.insert(123412455,31);
+    hashTable.printHash();
     cout << endl;
-    cout << CH.search(x) << endl;
-    CH.remove(x);
-    CH.printHash();
+    cout << hashTable.search(123412455) << endl;
+//    hashTable.remove(123412455);
+//    hashTable.printHash();
+
     return 0;
 }

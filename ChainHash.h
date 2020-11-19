@@ -166,7 +166,6 @@ void ChainHash<Key, Data>::printHash() {
             arr[i]->show();
         }
     }
-
 }
 
 template<class Key, class Data>
