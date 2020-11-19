@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/Vlad/CLionProjects/ADS_Laba4/ChainHash.h
+iostream
+-
+HashTable.h
+/Users/Vlad/CLionProjects/ADS_Laba4/HashTable.h
+
+/Users/Vlad/CLionProjects/ADS_Laba4/HashTable.h
+iostream
+-
+
+/Users/Vlad/CLionProjects/ADS_Laba4/main.cpp
+iostream
+-
+HashTable.h
+/Users/Vlad/CLionProjects/ADS_Laba4/HashTable.h
+ChainHash.h
+/Users/Vlad/CLionProjects/ADS_Laba4/ChainHash.h
+string
+-
+
