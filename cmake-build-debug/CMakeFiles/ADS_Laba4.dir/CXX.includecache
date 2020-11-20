@@ -16,6 +16,12 @@ HashTable.h
 iostream
 -
 
+/Users/Vlad/CLionProjects/ADS_Laba4/OpenHash.h
+iostream
+-
+HashTable.h
+/Users/Vlad/CLionProjects/ADS_Laba4/HashTable.h
+
 /Users/Vlad/CLionProjects/ADS_Laba4/main.cpp
 iostream
 -
@@ -23,6 +29,8 @@ HashTable.h
 /Users/Vlad/CLionProjects/ADS_Laba4/HashTable.h
 ChainHash.h
 /Users/Vlad/CLionProjects/ADS_Laba4/ChainHash.h
+OpenHash.h
+/Users/Vlad/CLionProjects/ADS_Laba4/OpenHash.h
 string
 -
 

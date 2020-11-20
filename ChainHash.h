@@ -10,7 +10,9 @@ template<class Key = int, class Data = int>
 class ChainHash : public HashTable<Key, Data> {
 private:
     class Chain {
-    private:
+        friend class Iterator;
+
+    public:
         class Node {
         public:
             Key key;
@@ -24,7 +26,6 @@ private:
         int size;
         int view_count;
 
-    public:
         Chain();
 
         Chain(Chain &chain);
@@ -49,6 +50,27 @@ private:
 
     int nearPow2(int x);
 
+    class Iterator : public HashTable<Key, Data>::Iterator {
+    protected:
+        ChainHash<Key, Data> *table;
+        typename Chain::Node *current;
+    public:
+        explicit Iterator(HashTable<Key, Data> *ch);
+
+        void checkException() override;
+
+        void toBegin() override;
+
+        void toEnd() override;
+
+        Data &operator*() override;
+
+        void operator++() override;
+
+        void operator++(int) override;
+
+    };
+
 public:
     explicit ChainHash(int _size);
 
@@ -56,17 +78,104 @@ public:
 
     ~ChainHash();
 
-    bool insert(Key key, Data data);
+    bool insert(Key key, Data data) override;
 
-    bool remove(Key key);
+    bool remove(Key key) override;
 
-    Data search(Key key);
+    Data search(Key key) override;
 
-    void clear();
+    void clear() override;
 
-    void printHash();
+    void printHash() override;
+
+    typename HashTable<Key, Data>::Iterator *begin() override;
+
+    typename HashTable<Key, Data>::Iterator *end() override;
 
 };
+
+template<class Key, class Data>
+ChainHash<Key, Data>::Iterator::Iterator(HashTable<Key, Data> *ch) {
+    this->table = (ChainHash<Key, Data> *) ch;
+    this->current = nullptr;
+    this->index = 0;
+}
+
+template<class Key, class Data>
+Data &ChainHash<Key, Data>::Iterator::operator*() {
+    checkException();
+    if (!current) throw runtime_error("EXCEPTION!");
+    return current->data;
+}
+
+template<class Key, class Data>
+void ChainHash<Key, Data>::Iterator::checkException() {
+    if (!table || !current) throw runtime_error("EXCEPTION!");
+}
+
+template<class Key, class Data>
+void ChainHash<Key, Data>::Iterator::toBegin() {
+    if (!table) throw runtime_error("EXCEPTION!");
+    for (int i = 0; i < table->size; ++i) {
+        if (table->arr[i]) {
+            this->current = table->arr[i]->head;
+            this->index = i;
+            return;
+        }
+    }
+
+}
+
+template<class Key, class Data>
+void ChainHash<Key, Data>::Iterator::toEnd() {
+    if (!table) throw runtime_error("EXCEPTION!");
+    for (int i = table->size - 1; i >= 0; --i) {
+        if (table->arr[i]) {
+            typename Chain::Node *tmp = table->arr[i]->head;
+            while (tmp->next) {
+                tmp = tmp->next;
+            }
+            this->current = tmp;
+            this->index = i;
+            return;
+        }
+    }
+
+}
+
+template<class Key, class Data>
+void ChainHash<Key, Data>::Iterator::operator++() {
+    checkException();
+    if (current->next) {
+        current = current->next;
+        return;
+    }
+    for (int i = this->index + 1; i < table->size; ++i) {
+        if (table->arr[i]) {
+            this->current = table->arr[i]->head;
+            this->index = i;
+            return;
+        }
+    }
+    throw runtime_error("EXCEPTION!");
+}
+
+template<class Key, class Data>
+void ChainHash<Key, Data>::Iterator::operator++(int) {
+    checkException();
+    if (current->next) {
+        current = current->next;
+        return;
+    }
+    for (int i = this->index + 1; i < table->size; ++i) {
+        if (table->arr[i]) {
+            this->current = table->arr[i]->head;
+            this->index = i;
+            return;
+        }
+    }
+    throw runtime_error("EXCEPTION!");
+}
 
 template<class Key, class Data>
 int ChainHash<Key, Data>::nearPow2(int x) {
@@ -81,8 +190,9 @@ int ChainHash<Key, Data>::nearPow2(int x) {
 
 template<class Key, class Data>
 ChainHash<Key, Data>::ChainHash(int _size) {
+    this->isChain = 1;
     this->size = nearPow2(_size);
-    arr = new Chain*[this->size];
+    arr = new Chain *[this->size];
     for (int i = 0; i < this->size; ++i) {
         arr[i] = nullptr;
     }
@@ -92,8 +202,9 @@ ChainHash<Key, Data>::ChainHash(int _size) {
 
 template<class Key, class Data>
 ChainHash<Key, Data>::ChainHash(ChainHash<Key, Data> &ch) {
+    this->isChain = 1;
     this->size = ch.size;
-    arr = new Chain[this->size];
+    arr = new Chain *[this->size];
     for (int i = 0; i < this->size; ++i) {
         arr[i] = ch.arr[i];
     }
@@ -108,6 +219,7 @@ ChainHash<Key, Data>::~ChainHash() {
 
 template<class Key, class Data>
 void ChainHash<Key, Data>::clear() {
+    if (this->isEmpty()) return;
     for (int i = 0; i < this->size; ++i) {
         delete arr[i];
     }
@@ -166,6 +278,20 @@ void ChainHash<Key, Data>::printHash() {
             arr[i]->show();
         }
     }
+}
+
+template<class Key, class Data>
+typename HashTable<Key, Data>::Iterator *ChainHash<Key, Data>::begin() {
+    HashTable<>::Iterator *iterator = new ChainHash<>::Iterator(this);
+    iterator->toBegin();
+    return iterator;
+}
+
+template<class Key, class Data>
+typename HashTable<Key, Data>::Iterator *ChainHash<Key, Data>::end() {
+    HashTable<>::Iterator *iterator = new ChainHash<>::Iterator(this);
+    iterator->toEnd();
+    return iterator;
 }
 
 template<class Key, class Data>

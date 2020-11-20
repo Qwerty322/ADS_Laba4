@@ -3,5 +3,6 @@
 
 CMakeFiles/ADS_Laba4.dir/main.cpp.o: ../ChainHash.h
 CMakeFiles/ADS_Laba4.dir/main.cpp.o: ../HashTable.h
+CMakeFiles/ADS_Laba4.dir/main.cpp.o: ../OpenHash.h
 CMakeFiles/ADS_Laba4.dir/main.cpp.o: ../main.cpp
 
