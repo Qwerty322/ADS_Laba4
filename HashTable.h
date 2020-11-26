@@ -12,7 +12,7 @@ protected:
     int size;
     int count;
     int view_count;
-    int isChain;
+    bool isChain;
 
 
     int convert(Key key);
@@ -91,15 +91,19 @@ public:
 
         virtual void operator++(int) = 0;
 
+//        virtual bool operator==(HashTable<Key, Data>::Iterator *it) = 0;
+
     };
 
     HashTable();
+
+    virtual ~HashTable() = default;
 
 //    void selectChainMode(int _size);
 //
 //    void selectOpenMode(int _size);
 //
-    void showMode();
+    bool showMode();
 
     int getCount();
 
@@ -298,10 +302,11 @@ bool HashTable<Key, Data>::isEmpty() {
 }
 
 template<class Key, class Data>
-void HashTable<Key, Data>::showMode() {
+bool HashTable<Key, Data>::showMode() {
     if (isChain) {
         cout << "Form is chain!\n";
     } else cout << "Form is open!\n";
+    return isChain;
 }
 
 //template<class Key, class Data>

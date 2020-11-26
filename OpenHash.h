@@ -31,11 +31,11 @@ private:
 
 public:
     class Iterator : public HashTable<Key, Data>::Iterator {
-    protected:
+    public:
         OpenHash<Key, Data> *table;
 
         Cell *current;
-    public:
+
         explicit Iterator(HashTable<Key, Data> *ch);
 
         void checkException() override;
@@ -49,6 +49,8 @@ public:
         void operator++() override;
 
         void operator++(int) override;
+
+//        bool operator==(typename HashTable<Key, Data>::Iterator *it) override;
 
     };
 
@@ -144,6 +146,11 @@ void OpenHash<Key, Data>::Iterator::operator++(int) {
     throw runtime_error("EXCEPTION!");
 }
 
+//template<class Key, class Data>
+//bool OpenHash<Key, Data>::Iterator::operator==(typename HashTable<Key, Data>::Iterator *it) {
+//    return this->current == it->current;
+//}
+
 template<class Key, class Data>
 int OpenHash<Key, Data>::upperPow2(int x) {
     x--;
@@ -181,7 +188,7 @@ void OpenHash<Key, Data>::clear() {
 
 template<class Key, class Data>
 OpenHash<Key, Data>::~OpenHash() {
-    clear();
+    delete [] array;
 }
 
 template<class Key, class Data>
@@ -201,7 +208,7 @@ bool OpenHash<Key, Data>::insert(Key key, Data data) {
     for (int i = 0; i < this->size - 1; ++i) {
         this->view_count++;
         int hashKey = squadZond(this->convert(key), i);
-        if (array[hashKey].status == BUSY) break;
+        if (array[hashKey].status == BUSY) continue;
         array[hashKey].key = key;
         array[hashKey].data = data;
         array[hashKey].status = BUSY;
@@ -217,7 +224,8 @@ bool OpenHash<Key, Data>::remove(Key key) {
     for (int i = 0; i < this->size - 1; ++i) {
         this->view_count++;
         int hashKey = squadZond(this->convert(key), i);
-        if (array[hashKey].key == key) {
+        if (array[hashKey].status == FREE) break;
+        if (array[hashKey].key == key && array[hashKey].status == BUSY) {
             array[hashKey].status = DELETED;
             this->count--;
             return true;
@@ -232,7 +240,8 @@ Data OpenHash<Key, Data>::search(Key key) {
     for (int i = 0; i < this->size - 1; ++i) {
         this->view_count++;
         int hashKey = squadZond(this->convert(key), i);
-        if (array[hashKey].key == key) {
+        if (array[hashKey].status == FREE) break;
+        if (array[hashKey].key == key && array[hashKey].status == BUSY) {
             return array[hashKey].data;
         }
     }
@@ -242,9 +251,16 @@ Data OpenHash<Key, Data>::search(Key key) {
 template<class Key, class Data>
 void OpenHash<Key, Data>::printHash() {
     if (this->isEmpty()) return;
+    cout << "Table:\n";
     for (int i = 0; i < this->size; ++i) {
         if (array[i].status == BUSY) {
-            cout << i << ") " << array[i].key << "(" << array[i].data << ")\n";
+            cout << i << ") " << array[i].key << "(" << array[i].data << ") - BUSY" << endl;
+        }
+        else if (array[i].status == DELETED) {
+            cout << i << ") " << array[i].key << "(" << array[i].data << ") - DELETED" << endl;
+        }
+        else if (array[i].status == FREE) {
+            cout << i << ") " << array[i].key << "(" << array[i].data << ") - FREE" << endl;
         }
     }
 }

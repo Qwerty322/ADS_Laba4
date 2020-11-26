@@ -51,10 +51,10 @@ private:
     int nearPow2(int x);
 
     class Iterator : public HashTable<Key, Data>::Iterator {
-    protected:
+    public:
         ChainHash<Key, Data> *table;
         typename Chain::Node *current;
-    public:
+
         explicit Iterator(HashTable<Key, Data> *ch);
 
         void checkException() override;
@@ -68,6 +68,8 @@ private:
         void operator++() override;
 
         void operator++(int) override;
+
+        bool operator==(typename ChainHash<Key, Data>::Iterator *it);
 
     };
 
@@ -178,6 +180,13 @@ void ChainHash<Key, Data>::Iterator::operator++(int) {
 }
 
 template<class Key, class Data>
+bool ChainHash<Key, Data>::Iterator::operator==(ChainHash<Key, Data>::Iterator *it) {
+    cout << this->current << "  |  " << it->current << endl;
+    return this->current == it->current;
+}
+
+
+template<class Key, class Data>
 int ChainHash<Key, Data>::nearPow2(int x) {
     if (x == 0) return 1;
     int res = 1;
@@ -262,16 +271,20 @@ Data ChainHash<Key, Data>::search(Key key) {
     if (this->isEmpty()) throw runtime_error("EXCEPTION");
     int hashKey = this->hash(this->convert(key));
     if (arr[hashKey] == nullptr) throw runtime_error("EXCEPTION");
+    int data;
     try {
-        return arr[hashKey]->get(key);
+        data = arr[hashKey]->get(key);
+        this->view_count += arr[hashKey]->getViewCount();
     } catch (runtime_error e) {
         throw e;
     }
+    return data;
 }
 
 template<class Key, class Data>
 void ChainHash<Key, Data>::printHash() {
     if (this->isEmpty()) return;
+    cout << "Table:\n";
     for (int i = 0; i < this->size; ++i) {
         if (arr[i]) {
             cout << i << ") ";
