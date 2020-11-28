@@ -69,7 +69,9 @@ private:
 
         void operator++(int) override;
 
-        bool operator==(typename ChainHash<Key, Data>::Iterator *it);
+//        bool operator==(typename ChainHash<Key, Data>::Iterator *it);
+
+        bool operator==(typename HashTable<Key, Data>::Iterator *it) override;
 
     };
 
@@ -78,7 +80,7 @@ public:
 
     ChainHash(ChainHash<Key, Data> &ch);
 
-    ~ChainHash();
+    ~ChainHash() override;
 
     bool insert(Key key, Data data) override;
 
@@ -179,10 +181,15 @@ void ChainHash<Key, Data>::Iterator::operator++(int) {
     throw runtime_error("EXCEPTION!");
 }
 
+//template<class Key, class Data>
+//bool ChainHash<Key, Data>::Iterator::operator==(ChainHash<Key, Data>::Iterator *it) {
+//    cout << this->current << "  |  " << it->current << endl;
+//    return this->current == it->current;
+//}
+
 template<class Key, class Data>
-bool ChainHash<Key, Data>::Iterator::operator==(ChainHash<Key, Data>::Iterator *it) {
-    cout << this->current << "  |  " << it->current << endl;
-    return this->current == it->current;
+bool ChainHash<Key, Data>::Iterator::operator==(typename HashTable<Key, Data>::Iterator *it) {
+    return this->current == static_cast<ChainHash<>::Iterator*>(it)->current;
 }
 
 
@@ -374,7 +381,7 @@ bool ChainHash<Key, Data>::Chain::add(Key key, Data data) {
     Node *tmp = head;
     while (tmp) {
         view_count++;
-        if (tmp->data == data) return false;
+        if (tmp->key == key) return false;
         if (!tmp->next) break;
         tmp = tmp->next;
     }

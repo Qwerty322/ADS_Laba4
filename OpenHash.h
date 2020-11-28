@@ -50,7 +50,7 @@ public:
 
         void operator++(int) override;
 
-//        bool operator==(typename HashTable<Key, Data>::Iterator *it) override;
+        bool operator==(typename HashTable<Key, Data>::Iterator *it) override;
 
     };
 
@@ -58,7 +58,7 @@ public:
 
     OpenHash(OpenHash<Key, Data> &ch);
 
-    ~OpenHash();
+    ~OpenHash() override;
 
     bool insert(Key key, Data data) override;
 
@@ -146,6 +146,11 @@ void OpenHash<Key, Data>::Iterator::operator++(int) {
     throw runtime_error("EXCEPTION!");
 }
 
+template<class Key, class Data>
+bool OpenHash<Key, Data>::Iterator::operator==(typename HashTable<Key, Data>::Iterator *it) {
+    return this->current == static_cast<OpenHash<>::Iterator*>(it)->current;
+}
+
 //template<class Key, class Data>
 //bool OpenHash<Key, Data>::Iterator::operator==(typename HashTable<Key, Data>::Iterator *it) {
 //    return this->current == it->current;
@@ -208,6 +213,7 @@ bool OpenHash<Key, Data>::insert(Key key, Data data) {
     for (int i = 0; i < this->size - 1; ++i) {
         this->view_count++;
         int hashKey = squadZond(this->convert(key), i);
+        if (array[hashKey].status == BUSY && array[hashKey].key == key) break;
         if (array[hashKey].status == BUSY) continue;
         array[hashKey].key = key;
         array[hashKey].data = data;

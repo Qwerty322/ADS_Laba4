@@ -164,8 +164,8 @@ void showMenu(bool main = true) {
 
 int main() {
     srand(time(0));
-//    TestHashFunc(512);
-    TestHashTable(0.75, false, 1000);
+    TestHashFunc(1000);
+//    TestHashTable(0.75, false, 1000);
     return 0;
 }
 
@@ -177,6 +177,20 @@ int main() {
     HashTable<TYPE, TYPE> *hashTable = nullptr;
     HashTable<TYPE, TYPE>::Iterator *iterator = nullptr;
     HashTable<TYPE, TYPE>::Iterator *iterator1 = nullptr;
+    cout << "Choose a form: chain(1) or open(2)!\n Input: ";
+    int ans, size;
+    cin >> ans;
+    if (ans == 1) {
+        cout << "Enter a size of table: ";
+        cin >> size;
+        hashTable = new ChainHash<>(size);
+    } else if (ans == 2) {
+        cout << "Enter a size of table: ";
+        cin >> size;
+        hashTable = new OpenHash<>(size);
+    } else {
+        cout << "Form doesn't set!\n";
+    }
     bool exit = true;
     while (exit) {
         showMenu();
@@ -411,8 +425,7 @@ int main() {
                             case 5: {
                                 clearConsole();
                                 try {
-//                                    *iterator1 == *iterator;
-                                    cout << (iterator == iterator1) << endl;
+                                    cout << boolalpha << (*iterator == iterator1) << endl;
                                 } catch (runtime_error error) {
                                     cout << error.what() << endl;
                                 }
@@ -438,6 +451,7 @@ int main() {
                 break;
             }
             case 777: {
+                clearConsole();
                 for (int i = 0; i < 5; ++i) {
                     hashTable->insert(rand() % 200000000 + 100000000, i);
                 }
