@@ -181,15 +181,10 @@ void ChainHash<Key, Data>::Iterator::operator++(int) {
     throw runtime_error("EXCEPTION!");
 }
 
-//template<class Key, class Data>
-//bool ChainHash<Key, Data>::Iterator::operator==(ChainHash<Key, Data>::Iterator *it) {
-//    cout << this->current << "  |  " << it->current << endl;
-//    return this->current == it->current;
-//}
 
 template<class Key, class Data>
 bool ChainHash<Key, Data>::Iterator::operator==(typename HashTable<Key, Data>::Iterator *it) {
-    return this->current == static_cast<ChainHash<>::Iterator*>(it)->current;
+    return this->current == static_cast<ChainHash<>::Iterator *>(it)->current;
 }
 
 

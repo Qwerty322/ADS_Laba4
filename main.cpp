@@ -34,18 +34,17 @@ void TestHashFunc(int size) {
     for (int i = 0; i < 25 * size; i++) {
         int x = rand() % 200000000 + 100000000;
         int k = Hash(x, size);
-//        cout << x << "  " << k << endl;
         arr[k]++;
     }
     double sum = 0;
-    //СКО
     for (int i = 0; i < size; i++) {
         sum += (arr[i] - 25) * (arr[i] - 25);
     }
     sum /= 25.0;
 
     cout << "m-sqrt(m) " << (double) (size - sqrt((double) size)) << endl;
-    cout << sum << endl;
+    cout << sum << " " << rand() % (int) ((size + sqrt((double) size)) - (size - sqrt((double) size))) +
+                          (double) (size - sqrt((double) size)) << endl;
     cout << "m+sqrt(m) " << (double) (size + sqrt((double) size)) << endl;
     delete[] arr;
 }
@@ -74,6 +73,7 @@ void TestHashTable(double alpha, bool isChain, int size) {
             ht->remove(arr[index]);
             del += ht->getViewCount();
             int x = rand() % 200000000 + 100000000;
+            arr[index] = x;
             ht->insert(x, 1);
             ins += ht->getViewCount();
             index = rand() % count;
@@ -141,6 +141,7 @@ void showMenu(bool main = true) {
                 "12. Set end                    |\n"
                 "13. Print table                |\n"
                 "14. Iterator menu              |\n"
+                "15. Test menu                  |\n"
                 "0.  Exit                       |\n"
                 "-------------------------------\n"
                 "Input: ";
@@ -157,21 +158,9 @@ void showMenu(bool main = true) {
     }
 }
 
-#define Test
-//#define Main
-
-#ifdef Test
-
-int main() {
-    srand(time(0));
-    TestHashFunc(1000);
-//    TestHashTable(0.75, false, 1000);
-    return 0;
-}
-
-#endif
-
+#define Main
 #ifdef Main
+
 int main() {
     srand(time(0));
     HashTable<TYPE, TYPE> *hashTable = nullptr;
@@ -432,6 +421,7 @@ int main() {
                                 break;
                             }
                             case 0: {
+                                clearConsole();
                                 exit1 = false;
                                 break;
                             }
@@ -443,6 +433,56 @@ int main() {
                     }
                 } else {
                     cout << "At first set a iterator!\n";
+                }
+                break;
+            }
+            case 15: {
+                clearConsole();
+                bool test = true;
+                int in;
+                while (test) {
+                    cout << "____________MENU_______________\n"
+                            "1. Test hash function          |\n"
+                            "2. Test hash table             |\n"
+                            "0.  Exit                       |\n"
+                            "-------------------------------\n"
+                            "Input: ";
+                    cin >> in;
+                    switch (in) {
+                        case 1: {
+                            clearConsole();
+                            cout << "Enter size: ";
+                            int size;
+                            cin >> size;
+                            TestHashFunc(size);
+                            break;
+                        }
+                        case 2: {
+                            clearConsole();
+                            cout << "Enter alpha: ";
+                            double alpha;
+                            cin >> alpha;
+                            cout << "Choose form: chain(1) or open(0) : ";
+                            bool form;
+                            cin >> form;
+                            cout << "Enter size: ";
+                            int size;
+                            cin >> size;
+                            TestHashTable(alpha, form, size);
+                            break;
+                        }
+                        case 0: {
+                            clearConsole();
+                            test = false;
+                            break;
+                        }
+                        default: {
+                            clearConsole();
+                            cout << "Incorrect input! Please repeat.\n";
+                            break;
+                        }
+
+                    }
                 }
                 break;
             }
@@ -466,4 +506,5 @@ int main() {
     }
     return 0;
 }
+
 #endif

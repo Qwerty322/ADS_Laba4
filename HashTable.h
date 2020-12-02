@@ -9,15 +9,15 @@ using namespace std;
 template<class Key = int, class Data = int>
 class HashTable {
 protected:
-    int size;
-    int count;
+    int size;  // размер таблицы
+    int count;  // кол-во элементов в таблице
     int view_count;
-    bool isChain;
+    bool isChain;  // форма представления
 
 
-    int convert(Key key);
+    int convert(Key key);  // преобразование ключа
 
-    int hash(int key);
+    int hash(int key);  // хеш-функция
 
 public:
     class Iterator {
@@ -30,43 +30,43 @@ public:
 
         virtual void toEnd() = 0;
 
-        virtual Data &operator*() = 0;
+        virtual Data &operator*() = 0;  // доступ к чтению/записи
 
-        virtual void operator++() = 0;
+        virtual void operator++() = 0; // переход к следующему элементу
 
-        virtual void operator++(int) = 0;
+        virtual void operator++(int) = 0; // переход к следующему элементу
 
-        virtual bool operator==(HashTable<Key, Data>::Iterator *it) = 0;
+        virtual bool operator==(HashTable<Key, Data>::Iterator *it) = 0;  // сравнение элементов
 
     };
 
-    HashTable();
+    HashTable();  // конструктор
 
-    virtual ~HashTable() = default;
+    virtual ~HashTable() = default;  // деструктор
 
-    bool showMode();
+    bool showMode(); // опрос формы представления
 
-    int getCount();
+    int getCount(); // опрос кол-ва элементов в таблице
 
-    int getSize();
+    int getSize();  // опрос размера таблицы
 
     int getViewCount();
 
-    bool isEmpty();
+    bool isEmpty();  // опрос на пустоту списка
 
-    virtual bool insert(Key key, Data data) = 0;
+    virtual bool insert(Key key, Data data) = 0;  // вставка элемента в таблицу
 
-    virtual bool remove(Key key) = 0;
+    virtual bool remove(Key key) = 0;  // удаление элемента из таблицы
 
-    virtual Data search(Key key) = 0;
+    virtual Data search(Key key) = 0;  // поиск элемента в таблице
 
-    virtual void clear() = 0;
+    virtual void clear() = 0;  // очистка таблицы
 
-    virtual void printHash() = 0;
+    virtual void printHash() = 0;  // вывод таблицы
 
-    virtual HashTable::Iterator *begin() = 0;
+    virtual HashTable::Iterator *begin() = 0;  // запрос итератора begin()
 
-    virtual HashTable::Iterator *end() = 0;
+    virtual HashTable::Iterator *end() = 0; // запрос итератора end()
 };
 
 

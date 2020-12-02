@@ -148,13 +148,9 @@ void OpenHash<Key, Data>::Iterator::operator++(int) {
 
 template<class Key, class Data>
 bool OpenHash<Key, Data>::Iterator::operator==(typename HashTable<Key, Data>::Iterator *it) {
-    return this->current == static_cast<OpenHash<>::Iterator*>(it)->current;
+    return this->current == static_cast<OpenHash<>::Iterator *>(it)->current;
 }
 
-//template<class Key, class Data>
-//bool OpenHash<Key, Data>::Iterator::operator==(typename HashTable<Key, Data>::Iterator *it) {
-//    return this->current == it->current;
-//}
 
 template<class Key, class Data>
 int OpenHash<Key, Data>::upperPow2(int x) {
@@ -193,7 +189,7 @@ void OpenHash<Key, Data>::clear() {
 
 template<class Key, class Data>
 OpenHash<Key, Data>::~OpenHash() {
-    delete [] array;
+    delete[] array;
 }
 
 template<class Key, class Data>
@@ -261,11 +257,9 @@ void OpenHash<Key, Data>::printHash() {
     for (int i = 0; i < this->size; ++i) {
         if (array[i].status == BUSY) {
             cout << i << ") " << array[i].key << "(" << array[i].data << ") - BUSY" << endl;
-        }
-        else if (array[i].status == DELETED) {
+        } else if (array[i].status == DELETED) {
             cout << i << ") " << array[i].key << "(" << array[i].data << ") - DELETED" << endl;
-        }
-        else if (array[i].status == FREE) {
+        } else if (array[i].status == FREE) {
             cout << i << ") " << array[i].key << "(" << array[i].data << ") - FREE" << endl;
         }
     }
