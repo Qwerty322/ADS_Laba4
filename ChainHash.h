@@ -235,7 +235,6 @@ void ChainHash<Key, Data>::clear() {
         delete arr[i];
     }
     delete arr;
-    this->size = 0;
     this->count = 0;
 }
 

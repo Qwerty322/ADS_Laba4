@@ -44,7 +44,7 @@ void TestHashFunc(int size) {
 
     cout << "m-sqrt(m) " << (double) (size - sqrt((double) size)) << endl;
     cout << sum << " " << rand() % (int) ((size + sqrt((double) size)) - (size - sqrt((double) size))) +
-                          (double) (size - sqrt((double) size)) << endl;
+            (double) (size - sqrt((double) size)) << endl;
     cout << "m+sqrt(m) " << (double) (size + sqrt((double) size)) << endl;
     delete[] arr;
 }
@@ -66,7 +66,7 @@ void TestHashTable(double alpha, bool isChain, int size) {
         arr[i] = key;
     }
     ht->getViewCount();
-    cout << "Размер до " << ht->getCount() << endl;
+    cout << "Size before " << ht->getCount() << endl;
     for (int i = 0; i < count / 2; i++) {
         if (i % 10 != 0) {
             int index = rand() % count;
@@ -98,22 +98,22 @@ void TestHashTable(double alpha, bool isChain, int size) {
         }
     }
     delete[] arr;
-    cout << "Размер после " << ht->getCount() << endl;
+    cout << "Size after " << ht->getCount() << endl;
     if (isChain)
-        cout << "Вставка T " << 1 + alpha << endl;
+        cout << "Insert T " << 1 + alpha << endl;
     else
-        cout << "Вставка T " << 0.1 * (-log(1 - alpha) / alpha) + 0.9 * (1 / (1 - alpha)) << endl;
-    cout << "Вставка " << ins / (count / 2) << endl;
+        cout << "Insert T " << 0.1 * (-log(1 - alpha) / alpha) + 0.9 * (1 / (1 - alpha)) << endl;
+    cout << "Insert " << ins / (count / 2) << endl;
     if (isChain)
-        cout << "Удаление T " << 0.1 * (1 + alpha) + 0.9 * (1 + alpha / 2) << endl;
+        cout << "Delete T " << 0.1 * (1 + alpha) + 0.9 * (1 + alpha / 2) << endl;
     else
-        cout << "Удаление T " << 0.9 * (-log(1 - alpha) / alpha) + 0.1 * (1 / (1 - alpha)) << endl;
-    cout << "Удаление " << del / (count / 2) << endl;
+        cout << "Delete T " << 0.9 * (-log(1 - alpha) / alpha) + 0.1 * (1 / (1 - alpha)) << endl;
+    cout << "Delete " << del / (count / 2) << endl;
     if (isChain)
-        cout << "Поиск T " << 0.1 * (1 + alpha) + 0.9 * (1 + alpha / 2) << endl;
+        cout << "Search T " << 0.1 * (1 + alpha) + 0.9 * (1 + alpha / 2) << endl;
     else
-        cout << "Поиск T " << 0.9 * (-log(1 - alpha) / alpha) + 0.1 * (1 / (1 - alpha)) << endl;
-    cout << "Поиск " << fnd / (count / 2) << endl;
+        cout << "Search T " << 0.9 * (-log(1 - alpha) / alpha) + 0.1 * (1 / (1 - alpha)) << endl;
+    cout << "Search " << fnd / (count / 2) << endl;
     delete ht;
 }
 
