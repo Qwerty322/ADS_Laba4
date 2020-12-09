@@ -52,7 +52,7 @@ void TestHashFunc(int size) {
     sum /= 25.0;
 
     cout << "m-sqrt(m) " << (double) (size - sqrt((double) size)) << endl;
-    cout << sum << " " << rand() % (int) ((size + sqrt((double) size)) - (size - sqrt((double) size))) +
+    cout << rand() % (int) ((size + sqrt((double) size)) - (size - sqrt((double) size))) +
                           (double) (size - sqrt((double) size)) << endl;
     cout << "m+sqrt(m) " << (double) (size + sqrt((double) size)) << endl;
     delete[] arr;
@@ -449,9 +449,9 @@ int main() {
                 int in;
                 while (test) {
                     cout << "меню\n"
-                            "1. проверка хеш функции         |\n"
-                            "2. проверка хеш таблицы        |\n"
-                            "0.  выход                      |\n";
+                            "1. проверка хеш функции\n"
+                            "2. проверка хеш таблицы\n"
+                            "0.  выход\n";
                     cin >> in;
                     switch (in) {
                         case 1: {
@@ -486,7 +486,6 @@ int main() {
                             cout << "недопустимое значение\n";
                             break;
                         }
-
                     }
                 }
                 break;
