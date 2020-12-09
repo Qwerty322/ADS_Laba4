@@ -10,7 +10,7 @@ enum Status {
     FREE, BUSY, DELETED
 };
 
-template<class Key = int, class Data = int>
+template<class Key = double , class Data = int>
 class OpenHash : public HashTable<Key, Data> {
 private:
     class Cell {
@@ -26,7 +26,7 @@ private:
 
     int upperPow2(int x);
 
-    int squadZond(int key, int i);
+    int squadZond(Key key, int i);
 
 
 public:
@@ -160,7 +160,7 @@ int OpenHash<Key, Data>::upperPow2(int x) {
 }
 
 template<class Key, class Data>
-int OpenHash<Key, Data>::squadZond(int key, int i) {
+int OpenHash<Key, Data>::squadZond(Key key, int i) {
     float c1 = 0.5;
     float c2 = 0.5;
     return (int) (this->hash(key) + c1 * i + c2 * i * i) % this->size;

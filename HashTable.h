@@ -2,11 +2,12 @@
 #define ADS_LABA4_HASHTABLE_H
 
 #include <iostream>
+#include <math.h>
 
 using namespace std;
 
 
-template<class Key = int, class Data = int>
+template<class Key = double , class Data = int>
 class HashTable {
 protected:
     int size;  // размер таблицы
@@ -15,9 +16,8 @@ protected:
     bool isChain;  // форма представления
 
 
-    int convert(Key key);  // преобразование ключа
-
-    int hash(int key);  // хеш-функция
+    Key convert(Key key);  // преобразование ключа
+    int hash(Key key);  // хеш-функция
 
 public:
     class Iterator {
@@ -78,16 +78,26 @@ HashTable<Key, Data>::HashTable() {
 }
 
 template<class Key, class Data>
-int HashTable<Key, Data>::convert(Key key) {
-    int pair1 = key / 1000000;
-    int pair2 = key / 1000 % 1000;
-    int pair3 = key % 1000;
-    return (pair1 ^ 1 + pair2 ^ 2 + pair3 ^ 3) % 1000;
+Key HashTable<Key, Data>::convert(Key key) {
+    long int newKey = (int) (key * 1000);
+    newKey *= newKey;
+    int index = 0;
+    for (long int i = abs(newKey); i > 0; i /= 10, index++);
+    if (index % 2 == 0 && index > 6) {
+        newKey %= (int) pow(10, 6 + (index - 6) / 2);
+        newKey /= (int) pow(10, (index - 6) / 2);
+    }
+    else if (index % 2 == 1 && index > 6) {
+        newKey %= (int) pow(10, 6 + (index - 6 + 1) / 2);
+        newKey /= (int) pow(10, (index - 6 + 1) / 2);
+    }
+    return newKey;
 }
 
 template<class Key, class Data>
-int HashTable<Key, Data>::hash(int key) {
-    return key % size;
+int HashTable<Key, Data>::hash(Key key) {
+    double A = (sqrt(5) - 1) / 2;
+    return (int)(((A * key) - (int)(A * key)) * size);
 }
 
 template<class Key, class Data>
@@ -115,8 +125,8 @@ bool HashTable<Key, Data>::isEmpty() {
 template<class Key, class Data>
 bool HashTable<Key, Data>::showMode() {
     if (isChain) {
-        cout << "Form is chain!\n";
-    } else cout << "Form is open!\n";
+        cout << "Хеш таблица с цепочками коллизий!\n";
+    } else cout << "Хеш таблица с открытой адресацией!\n";
     return isChain;
 }
 

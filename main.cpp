@@ -7,23 +7,32 @@
 
 using namespace std;
 
-typedef int TYPE;
 
-int cinKey() {
+double cinKey() {
     while (1) {
-        cout << "Enter a key in interval [100000000; 300000000]: ";
-        int x;
+        cout << "Enter a key in interval [-10000.000; +10000.000]: ";
+        double x;
         cin >> x;
-        if (x >= 100000000 and x <= 300000000) return x;
+        if (x >= -10000 and x <= 10000) return x;
         cout << "Incorrect value! Repeat please.\n";
     }
 }
 
-int Hash(int key, int size) {
-    int pair1 = key / 1000000;
-    int pair2 = key / 1000 % 1000;
-    int pair3 = key % 1000;
-    return (pair1 ^ 1 + pair2 ^ 2 + pair3 ^ 3) % 1000 % size;
+double Hash(double key, int size) {
+    double A = (sqrt(5) - 1) / 2;
+    long int newKey = (int) (key * 1000);
+    newKey *= newKey;
+    int index = 0;
+    for (long int i = abs(newKey); i > 0; i /= 10, index++);
+    if (index % 2 == 0 && index > 6) {
+        newKey %= (int) pow(10, 6 + (index - 6) / 2);
+        newKey /= (int) pow(10, (index - 6) / 2);
+    }
+    else if (index % 2 == 1 && index > 6) {
+        newKey %= (int) pow(10, 6 + (index - 6 + 1) / 2);
+        newKey /= (int) pow(10, (index - 6 + 1) / 2);
+    }
+    return (int) (((A * newKey) - (int) (A * newKey)) * size);
 }
 
 void TestHashFunc(int size) {
@@ -32,7 +41,7 @@ void TestHashFunc(int size) {
     for (int i = 0; i < size; i++)
         arr[i] = 0;
     for (int i = 0; i < 25 * size; i++) {
-        int x = rand() % 200000000 + 100000000;
+        int x = rand() % 10000;
         int k = Hash(x, size);
         arr[k]++;
     }
@@ -44,7 +53,7 @@ void TestHashFunc(int size) {
 
     cout << "m-sqrt(m) " << (double) (size - sqrt((double) size)) << endl;
     cout << sum << " " << rand() % (int) ((size + sqrt((double) size)) - (size - sqrt((double) size))) +
-            (double) (size - sqrt((double) size)) << endl;
+                          (double) (size - sqrt((double) size)) << endl;
     cout << "m+sqrt(m) " << (double) (size + sqrt((double) size)) << endl;
     delete[] arr;
 }
@@ -53,7 +62,7 @@ void TestHashTable(double alpha, bool isChain, int size) {
     srand(time(0));
     double ins, fnd, del;
     ins = fnd = del = 0;
-    HashTable<TYPE, TYPE> *ht;
+    HashTable<double, int> *ht;
     if (isChain)
         ht = new ChainHash<>(size);
     else
@@ -61,18 +70,18 @@ void TestHashTable(double alpha, bool isChain, int size) {
     int count = (int) (alpha * ht->getSize());
     int *arr = new int[count];
     for (int i = 0; i < count; i++) {
-        int key = rand() % 200000000 + 100000000;
+        int key = rand() % 10000;
         ht->insert(key, i);
         arr[i] = key;
     }
     ht->getViewCount();
-    cout << "Size before " << ht->getCount() << endl;
+    cout << "размер до " << ht->getCount() << endl;
     for (int i = 0; i < count / 2; i++) {
         if (i % 10 != 0) {
             int index = rand() % count;
             ht->remove(arr[index]);
             del += ht->getViewCount();
-            int x = rand() % 200000000 + 100000000;
+            int x = rand() % 10000;
             arr[index] = x;
             ht->insert(x, 1);
             ins += ht->getViewCount();
@@ -83,13 +92,13 @@ void TestHashTable(double alpha, bool isChain, int size) {
             }
             catch (runtime_error) { fnd += ht->getViewCount(); }
         } else {
-            int x = rand() % 200000000 + 100000000;
+            int x = rand() % 10000;
             ht->remove(x);
             del += ht->getViewCount();
             int index = rand() % count;
             ht->insert(arr[index], 1);
             ins += ht->getViewCount();
-            x = rand() % 200000000 + 100000000;
+            x = rand() % 10000;
             try {
                 ht->search(x);
                 fnd += ht->getViewCount();
@@ -98,22 +107,22 @@ void TestHashTable(double alpha, bool isChain, int size) {
         }
     }
     delete[] arr;
-    cout << "Size after " << ht->getCount() << endl;
+    cout << "размер после " << ht->getCount() << endl;
     if (isChain)
-        cout << "Insert T " << 1 + alpha << endl;
+        cout << "вставка T " << 1 + alpha << endl;
     else
-        cout << "Insert T " << 0.1 * (-log(1 - alpha) / alpha) + 0.9 * (1 / (1 - alpha)) << endl;
-    cout << "Insert " << ins / (count / 2) << endl;
+        cout << "вставка T " << 0.1 * (-log(1 - alpha) / alpha) + 0.9 * (1 / (1 - alpha)) << endl;
+    cout << "вставка " << ins / (count / 2) << endl;
     if (isChain)
-        cout << "Delete T " << 0.1 * (1 + alpha) + 0.9 * (1 + alpha / 2) << endl;
+        cout << "удаление T " << 0.1 * (1 + alpha) + 0.9 * (1 + alpha / 2) << endl;
     else
-        cout << "Delete T " << 0.9 * (-log(1 - alpha) / alpha) + 0.1 * (1 / (1 - alpha)) << endl;
-    cout << "Delete " << del / (count / 2) << endl;
+        cout << "удаление T " << 0.9 * (-log(1 - alpha) / alpha) + 0.1 * (1 / (1 - alpha)) << endl;
+    cout << "удаление " << del / (count / 2) << endl;
     if (isChain)
-        cout << "Search T " << 0.1 * (1 + alpha) + 0.9 * (1 + alpha / 2) << endl;
+        cout << "поиск T " << 0.1 * (1 + alpha) + 0.9 * (1 + alpha / 2) << endl;
     else
-        cout << "Search T " << 0.9 * (-log(1 - alpha) / alpha) + 0.1 * (1 / (1 - alpha)) << endl;
-    cout << "Search " << fnd / (count / 2) << endl;
+        cout << "поиск T " << 0.9 * (-log(1 - alpha) / alpha) + 0.1 * (1 / (1 - alpha)) << endl;
+    cout << "поиск " << fnd / (count / 2) << endl;
     delete ht;
 }
 
@@ -126,35 +135,32 @@ void clearConsole() {
 
 void showMenu(bool main = true) {
     if (main) {
-        cout << "____________MENU_______________\n"
-                "1. Get size a table            |\n"
-                "2. Get count elems in table    |\n"
-                "3. Is empty table?             |\n"
-                "4. Clear table                 |\n"
-                "5. Search by key               |\n"
-                "6. Push by key                 |\n"
-                "7. Remove by key               |\n"
-                "8. Set chain form              |\n"
-                "9. Set open form               |\n"
-                "10. Which is form?             |\n"
-                "11. Set begin                  |\n"
-                "12. Set end                    |\n"
-                "13. Print table                |\n"
-                "14. Iterator menu              |\n"
-                "15. Test menu                  |\n"
-                "0.  Exit                       |\n"
-                "-------------------------------\n"
-                "Input: ";
+        cout << "меню\n"
+                "1. показать размер таблицы\n"
+                "2. показать кол-во элементов\n"
+                "3. пустая ли таблица\n"
+                "4. очистить таблицу\n"
+                "5. искать по ключу\n"
+                "6. вставить по ключу\n"
+                "7. удалить по ключу\n"
+                "8. установить цепочную форму\n"
+                "9. установить открытую форму\n"
+                "10. показать форму\n"
+                "11. установить begin\n"
+                "12. установить end\n"
+                "13. вывести таблицу\n"
+                "14. итератор меню\n"
+                "15. тест меню\n"
+                "0.  выход\n";
     } else {
-        cout << "____________MENU_______________\n"
-                "1. Init a second iterator      |\n"
-                "2. Write access (*)            |\n"
-                "3. Read access (*)             |\n"
-                "4. Go to next (++)             |\n"
-                "5. Check equality              |\n"
-                "0.  Exit                       |\n"
-                "-------------------------------\n"
-                "Input: ";
+        cout << "меню\n"
+                "1. установить второй итератор\n"
+                "2. запись\n"
+                "3. чтение\n"
+                "4. следующий\n"
+                "5. равенство\n"
+                "0.  выход\n";
+
     }
 }
 
@@ -163,22 +169,22 @@ void showMenu(bool main = true) {
 
 int main() {
     srand(time(0));
-    HashTable<TYPE, TYPE> *hashTable = nullptr;
-    HashTable<TYPE, TYPE>::Iterator *iterator = nullptr;
-    HashTable<TYPE, TYPE>::Iterator *iterator1 = nullptr;
-    cout << "Choose a form: chain(1) or open(2)!\n Input: ";
+    HashTable<double, int> *hashTable = nullptr;
+    HashTable<double, int>::Iterator *iterator = nullptr;
+    HashTable<double, int>::Iterator *iterator1 = nullptr;
+    cout << "выберите форму цепочки(1) открытая(2)!\n";
     int ans, size;
     cin >> ans;
     if (ans == 1) {
-        cout << "Enter a size of table: ";
+        cout << "введите размер: ";
         cin >> size;
         hashTable = new ChainHash<>(size);
     } else if (ans == 2) {
-        cout << "Enter a size of table: ";
+        cout << "введите размер: ";
         cin >> size;
         hashTable = new OpenHash<>(size);
     } else {
-        cout << "Form doesn't set!\n";
+        cout << "не установлено!\n";
     }
     bool exit = true;
     while (exit) {
@@ -191,7 +197,7 @@ int main() {
                 if (hashTable) {
                     cout << hashTable->getSize() << endl;
                 } else {
-                    cout << "At first choose a form!\n";
+                    cout << "выберите форму!\n";
                 }
                 break;
             }
@@ -200,7 +206,7 @@ int main() {
                 if (hashTable) {
                     cout << hashTable->getCount() << endl;
                 } else {
-                    cout << "At first choose a form!\n";
+                    cout << "выберите форму!\n";
                 }
                 break;
             }
@@ -209,7 +215,7 @@ int main() {
                 if (hashTable) {
                     cout << boolalpha << hashTable->isEmpty() << endl;
                 } else {
-                    cout << "At first choose a form!\n";
+                    cout << "выберите форму!\n";
                 }
                 break;
             }
@@ -218,49 +224,50 @@ int main() {
                 if (hashTable) {
                     hashTable->clear();
                 } else {
-                    cout << "At first choose a form!\n";
+                    cout << "выберите форму!\n";
                 }
                 break;
             }
             case 5: {
                 clearConsole();
                 if (hashTable) {
-                    TYPE key = cinKey();
+                    double key = cinKey();
                     try {
                         cout << hashTable->search(key) << endl;
                     } catch (runtime_error e) {
                         cout << e.what() << endl;
                     }
                 } else {
-                    cout << "At first choose a form!\n";
+                    cout << "выберите форму!\n";
                 }
                 break;
             }
             case 6: {
                 clearConsole();
                 if (hashTable) {
-                    TYPE data, key = cinKey();
-                    cout << "Enter a data:";
+                    double key = cinKey();
+                    int data;
+                    cout << "введите данные:";
                     cin >> data;
                     cout << boolalpha << hashTable->insert(key, data) << endl;
                 } else {
-                    cout << "At first choose a form!\n";
+                    cout << "выберите форму!\n";
                 }
                 break;
             }
             case 7: {
                 clearConsole();
                 if (hashTable) {
-                    TYPE key = cinKey();
+                    double key = cinKey();
                     cout << boolalpha << hashTable->remove(key) << endl;
                 } else {
-                    cout << "At first choose a form!\n";
+                    cout << "выберите форму!\n";
                 }
                 break;
             }
             case 8: {
                 clearConsole();
-                cout << "Enter a size of table: ";
+                cout << "введите размер: ";
                 int size;
                 cin >> size;
                 delete hashTable;
@@ -269,7 +276,7 @@ int main() {
             }
             case 9: {
                 clearConsole();
-                cout << "Enter a size of table: ";
+                cout << "введите размер: ";
                 int size;
                 cin >> size;
                 delete hashTable;
@@ -281,7 +288,7 @@ int main() {
                 if (hashTable) {
                     hashTable->showMode();
                 } else {
-                    cout << "At first choose a form!\n";
+                    cout << "выберите форму!\n";
                 }
                 break;
             }
@@ -294,7 +301,7 @@ int main() {
                         cout << error.what() << endl;
                     }
                 } else {
-                    cout << "At first choose a form!\n";
+                    cout << "выберите форму!\n";
                 }
                 break;
             }
@@ -307,7 +314,7 @@ int main() {
                         cout << error.what() << endl;
                     }
                 } else {
-                    cout << "At first choose a form!\n";
+                    cout << "выберите форму!\n";
                 }
                 break;
             }
@@ -316,7 +323,7 @@ int main() {
                 if (hashTable) {
                     hashTable->printHash();
                 } else {
-                    cout << "At first choose a form!\n";
+                    cout << "выберите форму!\n";
                 }
                 break;
             }
@@ -332,14 +339,14 @@ int main() {
                             case 1: {
                                 clearConsole();
                                 try {
-                                    cout << "Enter a setting: begin(1) or end(2): ";
+                                    cout << "begin(1) или end(2): ";
                                     int value;
                                     cin >> value;
                                     if (value == 1) {
                                         iterator1 = hashTable->begin();
                                     } else if (value == 2) {
                                         iterator1 = hashTable->end();
-                                    } else cout << "Incorrect input! Repeat please.\n";
+                                    } else cout << "недопустимое значение.\n";
                                 } catch (runtime_error error) {
                                     cout << error.what() << endl;
                                 }
@@ -349,20 +356,20 @@ int main() {
                                 clearConsole();
                                 try {
                                     if (iterator1) {
-                                        cout << "Enter a iterator: first(1) or second(2): ";
+                                        cout << "введите итератор первый(1) второй(2): ";
                                         int it;
                                         cin >> it;
-                                        cout << "Enter a new value: ";
-                                        TYPE value;
+                                        cout << "введите новое значение: ";
+                                        int value;
                                         cin >> value;
                                         if (it == 1) {
                                             **iterator = value;
                                         } else if (it == 2) {
                                             **iterator1 = value;
-                                        } else cout << "Incorrect input! Repeat please.\n";
+                                        } else cout << "недопустимое значение!\n";
                                     } else {
-                                        cout << "Enter a new value: ";
-                                        TYPE value;
+                                        cout << "введите новое значение: ";
+                                        int value;
                                         cin >> value;
                                         **iterator = value;
                                     }
@@ -375,14 +382,14 @@ int main() {
                                 clearConsole();
                                 try {
                                     if (iterator1) {
-                                        cout << "Enter a iterator: first(1) or second(2): ";
+                                        cout << "введите итератор первый(1) второй(2): ";
                                         int it;
                                         cin >> it;
                                         if (it == 1) {
                                             cout << **iterator << endl;
                                         } else if (it == 2) {
                                             cout << **iterator1 << endl;
-                                        } else cout << "Incorrect input! Repeat please.\n";
+                                        } else cout << "недопустимое значение!\n";
                                     } else {
                                         cout << **iterator << endl;
                                     }
@@ -395,14 +402,14 @@ int main() {
                                 clearConsole();
                                 try {
                                     if (iterator1) {
-                                        cout << "Enter a iterator: first(1) or second(2): ";
+                                        cout << "введите итератор первый(1) второй(2): ";
                                         int it;
                                         cin >> it;
                                         if (it == 1) {
                                             ++*iterator;
                                         } else if (it == 2) {
                                             ++*iterator1;
-                                        } else cout << "Incorrect input! Repeat please.\n";
+                                        } else cout << "недопустимое значение!\n";
                                     } else {
                                         ++*iterator;
                                     }
@@ -426,13 +433,13 @@ int main() {
                                 break;
                             }
                             default: {
-                                cout << "Incorrect value!\n";
+                                cout << "недопустимое значение!\n";
                                 break;
                             }
                         }
                     }
                 } else {
-                    cout << "At first set a iterator!\n";
+                    cout << "установите итератор!\n";
                 }
                 break;
             }
@@ -441,17 +448,15 @@ int main() {
                 bool test = true;
                 int in;
                 while (test) {
-                    cout << "____________MENU_______________\n"
-                            "1. Test hash function          |\n"
-                            "2. Test hash table             |\n"
-                            "0.  Exit                       |\n"
-                            "-------------------------------\n"
-                            "Input: ";
+                    cout << "меню\n"
+                            "1. проверка хеш функции         |\n"
+                            "2. проверка хеш таблицы        |\n"
+                            "0.  выход                      |\n";
                     cin >> in;
                     switch (in) {
                         case 1: {
                             clearConsole();
-                            cout << "Enter size: ";
+                            cout << "введите размер: ";
                             int size;
                             cin >> size;
                             TestHashFunc(size);
@@ -459,13 +464,13 @@ int main() {
                         }
                         case 2: {
                             clearConsole();
-                            cout << "Enter alpha: ";
+                            cout << "введите коэффициент заполненности: ";
                             double alpha;
                             cin >> alpha;
-                            cout << "Choose form: chain(1) or open(0) : ";
+                            cout << "введите форму: цепочки(1) или открытая(0): ";
                             bool form;
                             cin >> form;
-                            cout << "Enter size: ";
+                            cout << "введите размер: ";
                             int size;
                             cin >> size;
                             TestHashTable(alpha, form, size);
@@ -478,7 +483,7 @@ int main() {
                         }
                         default: {
                             clearConsole();
-                            cout << "Incorrect input! Please repeat.\n";
+                            cout << "недопустимое значение\n";
                             break;
                         }
 
@@ -490,18 +495,10 @@ int main() {
                 exit = false;
                 break;
             }
-            case 777: {
-                clearConsole();
-                for (int i = 0; i < 5; ++i) {
-                    hashTable->insert(rand() % 200000000 + 100000000, i);
-                }
-                break;
-            }
             default: {
-                cout << "Incorrect value!\n";
+                cout << "недопустимое значение\n";
                 break;
             }
-
         }
     }
     return 0;

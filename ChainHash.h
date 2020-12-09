@@ -6,12 +6,10 @@
 
 using namespace std;
 
-template<class Key = int, class Data = int>
+template<class Key = double , class Data = int>
 class ChainHash : public HashTable<Key, Data> {
 private:
     class Chain {
-        friend class Iterator;
-
     public:
         class Node {
         public:
@@ -68,8 +66,6 @@ private:
         void operator++() override;
 
         void operator++(int) override;
-
-//        bool operator==(typename ChainHash<Key, Data>::Iterator *it);
 
         bool operator==(typename HashTable<Key, Data>::Iterator *it) override;
 
