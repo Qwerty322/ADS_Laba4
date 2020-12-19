@@ -10,7 +10,7 @@ enum Status {
     FREE, BUSY, DELETED
 };
 
-template<class Key = int, class Data = int>
+template<class Key = string, class Data = int>
 class OpenHash : public HashTable<Key, Data> {
 private:
     class Cell {
@@ -26,7 +26,7 @@ private:
 
     int upperPow2(int x);
 
-    int squadZond(int key, int i);
+    int doubleZond(int key, int i);
 
 
 public:
@@ -160,10 +160,8 @@ int OpenHash<Key, Data>::upperPow2(int x) {
 }
 
 template<class Key, class Data>
-int OpenHash<Key, Data>::squadZond(int key, int i) {
-    float c1 = 0.5;
-    float c2 = 0.5;
-    return (int) (this->hash(key) + c1 * i + c2 * i * i) % this->size;
+int OpenHash<Key, Data>::doubleZond(int key, int i) {
+    return (this->hash(key) + i * this->hash1(key)) % this->size;
 }
 
 template<class Key, class Data>
@@ -208,7 +206,7 @@ template<class Key, class Data>
 bool OpenHash<Key, Data>::insert(Key key, Data data) {
     for (int i = 0; i < this->size - 1; ++i) {
         this->view_count++;
-        int hashKey = squadZond(this->convert(key), i);
+        int hashKey = doubleZond(this->convert(key), i);
         if (array[hashKey].status == BUSY && array[hashKey].key == key) break;
         if (array[hashKey].status == BUSY) continue;
         array[hashKey].key = key;
@@ -225,7 +223,7 @@ bool OpenHash<Key, Data>::remove(Key key) {
     if (this->isEmpty()) return false;
     for (int i = 0; i < this->size - 1; ++i) {
         this->view_count++;
-        int hashKey = squadZond(this->convert(key), i);
+        int hashKey = doubleZond(this->convert(key), i);
         if (array[hashKey].status == FREE) break;
         if (array[hashKey].key == key && array[hashKey].status == BUSY) {
             array[hashKey].status = DELETED;
@@ -241,7 +239,7 @@ Data OpenHash<Key, Data>::search(Key key) {
     if (this->isEmpty()) throw runtime_error("EXCEPTION");
     for (int i = 0; i < this->size - 1; ++i) {
         this->view_count++;
-        int hashKey = squadZond(this->convert(key), i);
+        int hashKey = doubleZond(this->convert(key), i);
         if (array[hashKey].status == FREE) break;
         if (array[hashKey].key == key && array[hashKey].status == BUSY) {
             return array[hashKey].data;
@@ -282,7 +280,7 @@ typename HashTable<Key, Data>::Iterator *OpenHash<Key, Data>::end() {
 
 template<class Key, class Data>
 OpenHash<Key, Data>::Cell::Cell() {
-    key = 0;
+    key = "";
     data = 0;
     status = FREE;
 }

@@ -15,6 +15,10 @@ HashTable.h
 /Users/Vlad/CLionProjects/ADS_Laba4/HashTable.h
 iostream
 -
+map
+-
+math.h
+-
 
 /Users/Vlad/CLionProjects/ADS_Laba4/OpenHash.h
 iostream
@@ -34,5 +38,7 @@ OpenHash.h
 string
 -
 math.h
+-
+map
 -
 

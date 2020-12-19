@@ -4,35 +4,93 @@
 #include "OpenHash.h"
 #include <string>
 #include <math.h>
+#include <map>
 
 using namespace std;
 
 typedef int TYPE;
+map<char, string> dict;
 
-int cinKey() {
+
+string randString() {
+    string str;
+    for (int i = 0; i < 5; ++i) {
+        str += (char) (rand() % 26 + 97);
+    }
+    return str;
+}
+
+string cinKey() {
     while (1) {
-        cout << "Enter a key in interval [100000000; 300000000]: ";
-        int x;
-        cin >> x;
-        if (x >= 100000000 and x <= 300000000) return x;
-        cout << "Incorrect value! Repeat please.\n";
+        cout << "Enter a key (string, only lowercase a-z, lenght <= 6): ";
+        string str;
+        cin >> str;
+        bool flag = true;
+        if (str.length() > 6) {
+            cout << "Lenght more then 6! Please repeat!\n";
+            continue;
+        }
+        for (char i : str) {
+            if (i >= 97 && i <= 122) {
+                continue;
+            } else {
+                flag = false;
+            }
+        }
+        if (flag) return str;
+        cout << "Incorrect input! Please repeat!\n";
     }
 }
 
-int Hash(int key, int size) {
-    int pair1 = key / 1000000;
-    int pair2 = key / 1000 % 1000;
-    int pair3 = key % 1000;
-    return (pair1 ^ 1 + pair2 ^ 2 + pair3 ^ 3) % 1000 % size;
+void initMap() {
+    dict.insert(pair<char, string>('a', "00001"));
+    dict.insert(pair<char, string>('b', "00010"));
+    dict.insert(pair<char, string>('c', "00011"));
+    dict.insert(pair<char, string>('d', "00100"));
+    dict.insert(pair<char, string>('e', "00101"));
+    dict.insert(pair<char, string>('f', "00110"));
+    dict.insert(pair<char, string>('g', "00111"));
+    dict.insert(pair<char, string>('h', "01000"));
+    dict.insert(pair<char, string>('i', "01001"));
+    dict.insert(pair<char, string>('j', "01010"));
+    dict.insert(pair<char, string>('k', "01011"));
+    dict.insert(pair<char, string>('l', "01100"));
+    dict.insert(pair<char, string>('m', "01101"));
+    dict.insert(pair<char, string>('n', "01110"));
+    dict.insert(pair<char, string>('o', "01111"));
+    dict.insert(pair<char, string>('p', "10000"));
+    dict.insert(pair<char, string>('q', "10001"));
+    dict.insert(pair<char, string>('r', "10010"));
+    dict.insert(pair<char, string>('s', "10011"));
+    dict.insert(pair<char, string>('t', "10100"));
+    dict.insert(pair<char, string>('u', "10101"));
+    dict.insert(pair<char, string>('v', "10110"));
+    dict.insert(pair<char, string>('w', "10111"));
+    dict.insert(pair<char, string>('x', "11000"));
+    dict.insert(pair<char, string>('y', "11001"));
+    dict.insert(pair<char, string>('z', "11010"));
+}
+
+long long int Hash(string key, int size) {
+    string str1;
+    for (char &i : key) {
+        str1 += dict[i];
+    }
+    long long int newKey = 0;
+    for (double p = 0, i = str1.length() - 1; i >= 0; --i, p++) {
+        if (str1[i] == '1') {
+            newKey += (int) pow(2, p);
+        }
+    }
+    return newKey % size;
 }
 
 void TestHashFunc(int size) {
-    srand(time(0));
     int *arr = new int[size];
     for (int i = 0; i < size; i++)
         arr[i] = 0;
     for (int i = 0; i < 25 * size; i++) {
-        int x = rand() % 200000000 + 100000000;
+        string x = randString();
         int k = Hash(x, size);
         arr[k]++;
     }
@@ -44,24 +102,23 @@ void TestHashFunc(int size) {
 
     cout << "m-sqrt(m) " << (double) (size - sqrt((double) size)) << endl;
     cout << sum << " " << rand() % (int) ((size + sqrt((double) size)) - (size - sqrt((double) size))) +
-            (double) (size - sqrt((double) size)) << endl;
+                          (double) (size - sqrt((double) size)) << endl;
     cout << "m+sqrt(m) " << (double) (size + sqrt((double) size)) << endl;
     delete[] arr;
 }
 
 void TestHashTable(double alpha, bool isChain, int size) {
-    srand(time(0));
     double ins, fnd, del;
     ins = fnd = del = 0;
-    HashTable<TYPE, TYPE> *ht;
+    HashTable<string, int> *ht;
     if (isChain)
         ht = new ChainHash<>(size);
     else
         ht = new OpenHash<>(size);
     int count = (int) (alpha * ht->getSize());
-    int *arr = new int[count];
+    string *arr = new string[count];
     for (int i = 0; i < count; i++) {
-        int key = rand() % 200000000 + 100000000;
+        string key = randString();
         ht->insert(key, i);
         arr[i] = key;
     }
@@ -72,7 +129,7 @@ void TestHashTable(double alpha, bool isChain, int size) {
             int index = rand() % count;
             ht->remove(arr[index]);
             del += ht->getViewCount();
-            int x = rand() % 200000000 + 100000000;
+            string x = randString();
             arr[index] = x;
             ht->insert(x, 1);
             ins += ht->getViewCount();
@@ -83,13 +140,13 @@ void TestHashTable(double alpha, bool isChain, int size) {
             }
             catch (runtime_error) { fnd += ht->getViewCount(); }
         } else {
-            int x = rand() % 200000000 + 100000000;
+            string x = randString();
             ht->remove(x);
             del += ht->getViewCount();
             int index = rand() % count;
             ht->insert(arr[index], 1);
             ins += ht->getViewCount();
-            x = rand() % 200000000 + 100000000;
+            x = randString();
             try {
                 ht->search(x);
                 fnd += ht->getViewCount();
@@ -158,14 +215,17 @@ void showMenu(bool main = true) {
     }
 }
 
+
 #define Main
+
 #ifdef Main
 
 int main() {
     srand(time(0));
-    HashTable<TYPE, TYPE> *hashTable = nullptr;
-    HashTable<TYPE, TYPE>::Iterator *iterator = nullptr;
-    HashTable<TYPE, TYPE>::Iterator *iterator1 = nullptr;
+    initMap();
+    HashTable<string, int> *hashTable = nullptr;
+    HashTable<string, int>::Iterator *iterator = nullptr;
+    HashTable<string, int>::Iterator *iterator1 = nullptr;
     cout << "Choose a form: chain(1) or open(2)!\n Input: ";
     int ans, size;
     cin >> ans;
@@ -225,7 +285,7 @@ int main() {
             case 5: {
                 clearConsole();
                 if (hashTable) {
-                    TYPE key = cinKey();
+                    string key = cinKey();
                     try {
                         cout << hashTable->search(key) << endl;
                     } catch (runtime_error e) {
@@ -239,7 +299,8 @@ int main() {
             case 6: {
                 clearConsole();
                 if (hashTable) {
-                    TYPE data, key = cinKey();
+                    string key = cinKey();
+                    int data;
                     cout << "Enter a data:";
                     cin >> data;
                     cout << boolalpha << hashTable->insert(key, data) << endl;
@@ -251,7 +312,7 @@ int main() {
             case 7: {
                 clearConsole();
                 if (hashTable) {
-                    TYPE key = cinKey();
+                    string key = cinKey();
                     cout << boolalpha << hashTable->remove(key) << endl;
                 } else {
                     cout << "At first choose a form!\n";
@@ -261,7 +322,6 @@ int main() {
             case 8: {
                 clearConsole();
                 cout << "Enter a size of table: ";
-                int size;
                 cin >> size;
                 delete hashTable;
                 hashTable = new ChainHash<>(size);
@@ -270,7 +330,6 @@ int main() {
             case 9: {
                 clearConsole();
                 cout << "Enter a size of table: ";
-                int size;
                 cin >> size;
                 delete hashTable;
                 hashTable = new OpenHash<>(size);
@@ -452,7 +511,6 @@ int main() {
                         case 1: {
                             clearConsole();
                             cout << "Enter size: ";
-                            int size;
                             cin >> size;
                             TestHashFunc(size);
                             break;
@@ -466,7 +524,6 @@ int main() {
                             bool form;
                             cin >> form;
                             cout << "Enter size: ";
-                            int size;
                             cin >> size;
                             TestHashTable(alpha, form, size);
                             break;
@@ -493,7 +550,7 @@ int main() {
             case 777: {
                 clearConsole();
                 for (int i = 0; i < 5; ++i) {
-                    hashTable->insert(rand() % 200000000 + 100000000, i);
+                    hashTable->insert(randString(), i);
                 }
                 break;
             }
@@ -501,7 +558,6 @@ int main() {
                 cout << "Incorrect value!\n";
                 break;
             }
-
         }
     }
     return 0;

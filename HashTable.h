@@ -2,22 +2,29 @@
 #define ADS_LABA4_HASHTABLE_H
 
 #include <iostream>
+#include <map>
+#include <math.h>
 
 using namespace std;
 
 
-template<class Key = int, class Data = int>
+template<class Key = string, class Data = int>
 class HashTable {
 protected:
     int size;  // размер таблицы
     int count;  // кол-во элементов в таблице
     int view_count;
     bool isChain;  // форма представления
+    map<char, string> map;
 
 
-    int convert(Key key);  // преобразование ключа
+    long long int convert(Key key);  // преобразование ключа
 
     int hash(int key);  // хеш-функция
+
+    int hash1(int key);  // хеш-функция
+
+    void initMap();
 
 public:
     class Iterator {
@@ -75,14 +82,22 @@ HashTable<Key, Data>::HashTable() {
     size = 0;
     count = 0;
     view_count = 0;
+    initMap();
 }
 
 template<class Key, class Data>
-int HashTable<Key, Data>::convert(Key key) {
-    int pair1 = key / 1000000;
-    int pair2 = key / 1000 % 1000;
-    int pair3 = key % 1000;
-    return (pair1 ^ 1 + pair2 ^ 2 + pair3 ^ 3) % 1000;
+long long int HashTable<Key, Data>::convert(Key key) {
+    string str1;
+    for (char &i : key) {
+        str1 += map[i];
+    }
+    long long int newKey = 0;
+    for (double p = 0, i = str1.length() - 1; i >= 0; --i, p++) {
+        if (str1[i] == '1') {
+            newKey += (int) pow(2, p);
+        }
+    }
+    return newKey;
 }
 
 template<class Key, class Data>
@@ -118,6 +133,41 @@ bool HashTable<Key, Data>::showMode() {
         cout << "Form is chain!\n";
     } else cout << "Form is open!\n";
     return isChain;
+}
+
+template<class Key, class Data>
+void HashTable<Key, Data>::initMap() {
+    map.insert(pair<char, string>('a', "00001"));
+    map.insert(pair<char, string>('b', "00010"));
+    map.insert(pair<char, string>('c', "00011"));
+    map.insert(pair<char, string>('d', "00100"));
+    map.insert(pair<char, string>('e', "00101"));
+    map.insert(pair<char, string>('f', "00110"));
+    map.insert(pair<char, string>('g', "00111"));
+    map.insert(pair<char, string>('h', "01000"));
+    map.insert(pair<char, string>('i', "01001"));
+    map.insert(pair<char, string>('j', "01010"));
+    map.insert(pair<char, string>('k', "01011"));
+    map.insert(pair<char, string>('l', "01100"));
+    map.insert(pair<char, string>('m', "01101"));
+    map.insert(pair<char, string>('n', "01110"));
+    map.insert(pair<char, string>('o', "01111"));
+    map.insert(pair<char, string>('p', "10000"));
+    map.insert(pair<char, string>('q', "10001"));
+    map.insert(pair<char, string>('r', "10010"));
+    map.insert(pair<char, string>('s', "10011"));
+    map.insert(pair<char, string>('t', "10100"));
+    map.insert(pair<char, string>('u', "10101"));
+    map.insert(pair<char, string>('v', "10110"));
+    map.insert(pair<char, string>('w', "10111"));
+    map.insert(pair<char, string>('x', "11000"));
+    map.insert(pair<char, string>('y', "11001"));
+    map.insert(pair<char, string>('z', "11010"));
+}
+
+template<class Key, class Data>
+int HashTable<Key, Data>::hash1(int key) {
+    return 1 + (key % (size - 2));
 }
 
 

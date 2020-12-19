@@ -6,7 +6,7 @@
 
 using namespace std;
 
-template<class Key = int, class Data = int>
+template<class Key = string, class Data = int>
 class ChainHash : public HashTable<Key, Data> {
 private:
     class Chain {
@@ -68,8 +68,6 @@ private:
         void operator++() override;
 
         void operator++(int) override;
-
-//        bool operator==(typename ChainHash<Key, Data>::Iterator *it);
 
         bool operator==(typename HashTable<Key, Data>::Iterator *it) override;
 
@@ -287,7 +285,7 @@ void ChainHash<Key, Data>::printHash() {
     if (this->isEmpty()) return;
     cout << "Table:\n";
     for (int i = 0; i < this->size; ++i) {
-        if (arr[i]) {
+        if (arr[i] != nullptr) {
             cout << i << ") ";
             arr[i]->show();
         }
